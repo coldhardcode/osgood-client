@@ -1,0 +1,21 @@
+--- 
+abstract: Client for the Osgood Passive, Persistent Event Queue
+author: Cory 'G' Watson <gphat@cpan.org>
+distribution_type: module
+generated_by: Module::Install version 0.670
+license: perl
+meta-spec: 
+  url: http://module-build.sourceforge.net/META-spec-v1.3.html
+  version: 1.3
+name: Osgood-Client
+no_index: 
+  directory: 
+    - inc
+    - t
+requires: 
+  DateTime: 0.41
+  DateTime::Format::ISO8601: 0.06
+  Moose: 0.26
+  XML::DOM: 1.44
+  XML::XPath: 1.13
+version: 1.0.0
