@@ -1,17 +1,44 @@
 package Osgood::Event;
 use Moose;
+use MooseX::Storage;
+use MooseX::AttributeHelpers;
 
 use DateTime;
+use DateTime::Format::ISO8601;
+
+with Storage('format' => 'JSON', 'io' => 'File');
 
 has 'id' => ( is => 'rw', isa => 'Int'  );
 has 'action' => ( is => 'rw', isa => 'Str', required => 1 );
 has 'date_occurred' => (
-	is => 'rw',
-	isa => 'DateTime',
-	default => sub { DateTime->now() }
+    is => 'rw',
+    isa => 'DateTime',
+    default => sub { DateTime->now }
 );
 has 'object' => ( is => 'rw', isa => 'Str', required => 1 );
-has 'params' => ( is => 'rw', isa => 'HashRef', default => sub{ {} } );
+has 'params' => (
+    metaclass => 'Collection::Hash',
+    is => 'rw',
+    isa => 'HashRef',
+    default => sub{ {} },
+    provides => {
+        get => 'get_param',
+        set => 'set_param'
+    }
+);
+
+MooseX::Storage::Engine->add_custom_type_handler(
+    'DateTime' => (
+        expand => sub { DateTime::Format::ISO8601->parse_datetime(shift) },
+        collapse => sub { (shift)->iso8601 }
+    )
+);
+
+__PACKAGE__->meta->make_immutable;
+
+1;
+
+__END__
 
 =head1 NAME
 
@@ -67,26 +94,9 @@ A HashRef of name-value pairs for this event.
 
 Allows setting a single name value pair directly.
 
-=cut
-sub set_param {
-	my $self	= shift();
-	my $key		= shift() or die('Must supply a key and value to set_param.');
-	my $value	= shift();
-
-	$self->params->{$key} = $value;
-}
-
 =item get_param
 
 Get the value of the specifed key.
-
-=cut
-sub get_param {
-	my $self	= shift();
-	my $key 	= shift() or die('Must supply a key to get_param.');
-
-	return $self->params->{$key};
-}
 
 =back
 
@@ -104,7 +114,3 @@ Copyright 2008 by Magazines.com, LLC
 
 You can redistribute and/or modify this code under the same terms as Perl
 itself.
-
-=cut
-
-1;

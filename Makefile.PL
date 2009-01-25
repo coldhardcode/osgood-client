@@ -10,13 +10,10 @@ requires    'JSON::XS';
 requires	'LWP::UserAgent';
 requires	'Moose'		=> '0.26';
 requires	'MooseX::Iterator' => '0.07';
-requires 	'URI';
+requires    'MooseX::Storage';
+requires    'MooseX::AttributeHelpers';
+requires    'URI';
 requires    'XML::XPath'=> '1.13';
-
-feature 'XML Serialization (slower)',
-    -default    => 0,
-    'XML::DOM'  => '1.44';
-
 
 auto_install;
 

@@ -1,6 +1,9 @@
 package Osgood::EventList;
 use Moose;
 use MooseX::Iterator;
+use MooseX::Storage;
+
+with Storage('format' => 'JSON', 'io' => 'File');
 
 has 'events' => ( is => 'rw', isa => 'ArrayRef', default => sub { [] } );
 
@@ -106,5 +109,7 @@ You can redistribute and/or modify this code under the same terms as Perl
 itself.
 
 =cut
+
+__PACKAGE__->meta->make_immutable;
 
 1;
