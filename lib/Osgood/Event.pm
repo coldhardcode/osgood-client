@@ -59,46 +59,34 @@ Note: object and action names are limited to 64 characters.
 
 =head1 METHODS
 
-=head2 Constructor
-
-=over 4
-
-=item new
+=head2 new
 
 Creates a new Osgood::Event object.  Requires an object and action.  If no
 date_occurred is specifed, then the C<DateTime->now> is used.
 
-=back
-
-=head2 Class Methods
-
-=over 4
-
-=item action
+=head2 action
 
 The action this event represents.
 
-=item date_occurred
+=head2 date_occurred
 
 The date and time this event occurred
 
-=item object
+=head2 object
 
 The object this event pertains to.
 
-=item params
+=head2 params
 
 A HashRef of name-value pairs for this event.
 
-=item set_param
+=head2 set_param
 
 Allows setting a single name value pair directly.
 
-=item get_param
+=head2 get_param
 
 Get the value of the specifed key.
-
-=back
 
 =head1 AUTHOR
 

@@ -18,8 +18,8 @@ has 'events' => (
 );
 
 has 'iterator' => (
-	metaclass => 'Iterable',
-	iterate_over => 'events'
+    metaclass => 'Iterable',
+    iterate_over => 'events'
 );
 
 =head1 NAME
@@ -40,35 +40,27 @@ A list of events.
 
 =head2 Constructor
 
-=over 4
-
-=item new
+=head2 new
 
 Creates a new Osgood::EventList object.
 
-=back
-
-=head2 Class Methods
-
-=over 4
-
-=item add_to_events
+=head2 add_to_events
 
 Add the specified event to the list.
 
-=item events
+=head2 events
 
 Set/Get the ArrayRef of events in this list.
 
-=item iterator
+=head2 iterator
 
 Returns a MooseX::Iterator for iterating over events.
 
-=item size
+=head2 size
 
 Returns the number of events in this list.
 
-=item get_highest_id
+=head2 get_highest_id
 
 Retrieves the largest id from the list of events.  This is useful for keeping
 state with an external process that needs to 'remember' the last event id
