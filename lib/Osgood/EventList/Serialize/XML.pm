@@ -13,7 +13,7 @@ use XML::DOM;
 
 =head1 NAME
 
-Osgood::EventList::Deserializer - XML Serializer for EventLists
+Osgood::EventList::Deserializer - XML (Des|S)erializer for EventLists
 
 =head1 DESCRIPTION
 
@@ -21,47 +21,37 @@ Osgood::EventList::Deserializer - XML Serializer for EventLists
 
 =head1 SYNOPSIS
 
-  my $serializer = new Osgood::EventList::Deserializer();
+  my $serializer = new Osgood::EventList::Serializer();
   my $xml = $serializer->serialize($list);
   my $new_list = $serializer->deserialize($xml);
  
 
 =head1 METHODS
 
-=head2 Constructor
+=head2 new
 
-=over 4
+Creates a new Osgood::EventList::Serialize::XML object.
 
-=item new
+=head2 serialize
 
-Creates a new Osgood::Serialize::XML object.
-
-=back
-
-=head2 Class Methods
-
-=over 4
-
-=item serialize
-
-Serialized the EventList to XML, returns an XML string.
+Serializes the EventList to XML, returns an XML string.
 
 =cut
 sub serialize {
 	my $self = shift();
 	my $list = shift();
 
-	my $doc = new XML::DOM::Document;
+	my $doc = XML::DOM::Document->new;
 	my $root = $doc->createElement('eventlist');
 	$doc->appendChild($root);
 
 	my $version = $doc->createElement('version');
-	$version->addText($self->version());
+	$version->addText($self->version);
 	$root->appendChild($version);
 
 	my $events = $doc->createElement('events');
 
-	foreach my $event (@{ $list->events() }) {
+	foreach my $event (@{ $list->events }) {
 		my $ev = $doc->createElement('event');
 
 		if(defined($event->id())) {
@@ -110,47 +100,46 @@ sub serialize {
 	return $string;
 }
 
-=item deserialize
+=head2 deserialize
 
 Deserialize the XML.  Returns an EventList.
 
 =cut
 sub deserialize {
-	my $self = shift();
-	my $xml = shift();
+    my ($self, $xml) = @_;
 
-	my $list = new Osgood::EventList();
+	my $list = Osgood::EventList->new;
 
-	my $xp = new XML::XPath(xml => $xml);
+	my $xp = XML::XPath->new(xml => $xml);
 	my $events = $xp->find('/eventlist/events/event');
-	foreach my $node ($events->get_nodelist()) {
+	foreach my $node ($events->get_nodelist) {
 
 		my $id = $xp->find('id', $node);
 		my $obj = $xp->find('object', $node);
 		my $act = $xp->find('action', $node);
 		my $docc = $xp->find('date_occurred', $node);
 
-		my $event = new Osgood::Event(
-			object	=> $obj->string_value(),
-			action	=> $act->string_value(),
+		my $event = Osgood::Event->new(
+			object	=> $obj->string_value,
+			action	=> $act->string_value,
 			date_occurred => DateTime::Format::ISO8601->parse_datetime(
-				$docc->string_value()
+				$docc->string_value
 			)
 		);
-		if(defined($id) && ($id->string_value() ne '')) {
-			$event->id($id->string_value());
+		if(defined($id) && ($id->string_value ne '')) {
+			$event->id($id->string_value);
 		}
 
 		$list->add_to_events($event);
 
 		my $params = $xp->find('params/param', $node);
-		if($params->size() > 0) {
-			foreach my $pnode ($params->get_nodelist()) {
+		if($params->size > 0) {
+			foreach my $pnode ($params->get_nodelist) {
 				my $name = $xp->find('name', $pnode);
 				my $value = $xp->find('value', $pnode);
 
 				$event->set_param(
-					$name->string_value(), $value->string_value()
+					$name->string_value, $value->string_value
 				);
 			}
 		}

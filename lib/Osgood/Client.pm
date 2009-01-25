@@ -97,13 +97,13 @@ sub send {
 	my $self = shift();
 
     # my $serializer = new Osgood::EventList::Serializer(list => $self->list());
-  	my $ser = $self->serializer->serialize($self->list());
+  	my $ser = $self->serializer->serialize($self->list);
 
 	my $ua = new LWP::UserAgent();
 
-	my $req = new HTTP::Request(POST => $self->url->canonical().'/event/add');
-	$req->content_type('application/x-www-form-urlencoded');
-	$req->content('ser=' . CGI::escape($ser));
+	my $req = new HTTP::Request(POST => $self->url->canonical.'/event');
+	$req->content_type($ser->content_type);
+	$req->content(CGI::escape($ser));
 
 	my $res = $ua->request($req);
 
