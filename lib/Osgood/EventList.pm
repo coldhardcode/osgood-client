@@ -1,11 +1,21 @@
 package Osgood::EventList;
 use Moose;
+use MooseX::AttributeHelpers;
 use MooseX::Iterator;
 use MooseX::Storage;
 
 with Storage('format' => 'JSON', 'io' => 'File');
 
-has 'events' => ( is => 'rw', isa => 'ArrayRef', default => sub { [] } );
+has 'events' => (
+    metaclass => 'Collection::Array',
+    is => 'rw',
+    isa => 'ArrayRef',
+    default => sub { [] },
+    provides => {
+        push => 'add_to_events',
+        count => 'size'
+    }
+);
 
 has 'iterator' => (
 	metaclass => 'Iterable',
@@ -22,9 +32,9 @@ A list of events.
 
 =head1 SYNOPSIS
 
-  my $list = new Osgood::EventList();
+  my $list = Osgood::EventList->new;
   $list->add_to_events($event);
-  print $list->size()."\n";
+  print $list->size."\n";
 
 =head1 METHODS
 
@@ -46,14 +56,6 @@ Creates a new Osgood::EventList object.
 
 Add the specified event to the list.
 
-=cut
-sub add_to_events {
-	my $self = shift();
-	my $event = shift();
-
-	push(@{ $self->events() }, $event);
-}
-
 =item events
 
 Set/Get the ArrayRef of events in this list.
@@ -66,13 +68,6 @@ Returns a MooseX::Iterator for iterating over events.
 
 Returns the number of events in this list.
 
-=cut
-sub size {
-	my $self = shift();
-
-	return scalar(@{ $self->events });
-}
-
 =item get_highest_id
 
 Retrieves the largest id from the list of events.  This is useful for keeping
@@ -81,12 +76,12 @@ it handled.
 
 =cut
 sub get_highest_id {
-	my $self = shift();
+	my ($self) = @_;
 
 	my $high = undef;
-	foreach my $event (@{ $self->events() }) {
-		if(!defined($high) || ($high < $event->id())) {
-			$high = $event->id();
+	foreach my $event (@{ $self->events }) {
+		if(!defined($high) || ($high < $event->id)) {
+			$high = $event->id;
 		}
 	}
 

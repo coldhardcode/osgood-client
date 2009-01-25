@@ -55,7 +55,7 @@ Note: object and action names are limited to 64 characters.
 
 =head1 SYNOPSIS
 
-  my $event = new Osgood::Event(object => 'Test', action => 'create');
+  my $event = Osgood::Event->new(object => 'Test', action => 'create');
 
 =head1 METHODS
 
@@ -66,7 +66,7 @@ Note: object and action names are limited to 64 characters.
 =item new
 
 Creates a new Osgood::Event object.  Requires an object and action.  If no
-date_occurred is specifed, then the DateTime->now() is used.
+date_occurred is specifed, then the C<DateTime->now> is used.
 
 =back
 

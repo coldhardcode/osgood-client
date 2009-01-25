@@ -1,22 +1,15 @@
-use Test::More tests => 4;
-
-BEGIN {
-	use_ok('Osgood::EventList::Serialize::JSON');
-}
+use Test::More tests => 2;
 
 use Osgood::Event;
 use Osgood::EventList;
 
 use XML::XPath;
 
-my $list = new Osgood::EventList;
+my $list = Osgood::EventList->new;
 
-my $ser = new Osgood::EventList::Serialize::JSON();
-isa_ok($ser, 'Osgood::EventList::Serialize::JSON', 'isa Osgood::EventList::Serialize::JSON');
+my $json = $list->freeze;
 
-my $json = $ser->serialize($list);
-
-my $slist = $ser->deserialize($json);
+my $slist = Osgood::EventList->thaw($json);
 isa_ok($slist, 'Osgood::EventList', 'isa Osgood::EventList');
 
-cmp_ok($slist->size(), '==', 0, 'Zero events');
+cmp_ok($slist->size, '==', 0, 'Zero events');

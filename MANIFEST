@@ -13,9 +13,6 @@ inc/Module/Install/WriteAll.pm
 lib/Osgood/Client.pm
 lib/Osgood/Event.pm
 lib/Osgood/EventList.pm
-lib/Osgood/EventList/Serialize.pm
-lib/Osgood/EventList/Serialize/JSON.pm
-lib/Osgood/EventList/Serialize/XML.pm
 LICENSE
 Makefile.PL
 MANIFEST			This list of files
@@ -24,8 +21,6 @@ t/00_basic.t
 t/01_event.t
 t/02_eventlist.t
 t/03_client.t
-t/04_serialize_json.t
-t/04_serialize_xml.t
 t/05_emptylist.t
 t/06_get_highest_id.t
-t/10server.t
+t/09serialize.t
