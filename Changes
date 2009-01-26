@@ -1,10 +1,11 @@
 Revision history for Perl extension Osgood::Client.
 
-1.2.0
+2.0.0
     - Ditch custom serialization for MooseX::Storage hotness
     - Remove all "new Foo" for "Foo->new"
     - Remove all ()s
     - Use MooseX::AttributeHelpers in place of custom hash/array management
+    - Change POST response to JSON
 1.1.2
     - Fix typo in Client's error declaration
     - Set list to undef when running a query to clear any existing results

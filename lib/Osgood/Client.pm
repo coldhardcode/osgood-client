@@ -2,17 +2,16 @@ package Osgood::Client;
 use Moose;
 
 use HTTP::Request;
+use JSON::XS;
 use LWP::UserAgent;
 use URI;
-use XML::XPath;
-use CGI;
 
 has 'error' => ( is => 'rw', isa => 'Str' );
 has 'url' => ( is => 'rw', isa => 'URI', default => sub { URI->new('http://localhost'); });
 has 'list' => ( is => 'rw', isa => 'Maybe[Osgood::EventList]' );
 has 'timeout' => ( is => 'rw', isa => 'Int', default => 30 );
 
-our $VERSION = '1.2.0';
+our $VERSION = '2.0.0';
 our $AUTHORITY = 'cpan:GPHAT';
 
 =head1 NAME
@@ -29,20 +28,20 @@ queue.
 To send some events:
 
   my $event = Osgood::Event->new(
-	object => 'Moose',
-	action => 'farted',
-	date_occurred => DateTime->now
+      object => 'Moose',
+      action => 'farted',
+      date_occurred => DateTime->now
   );
   my $list = Osgood::EventList->new(events => [ $event ])
   my $client = Osgood::Client->new(
-	url => 'http://localhost',
-	list => $list
+      url => 'http://localhost',
+      list => $list
   );
   my $retval = $client->send;
   if($list->size == $retval) {
-    print "Success :)\n";
+      print "Success :)\n";
   } else {
-    print "Failure :(\n";
+      print "Failure :(\n";
   }
 
 To query for events
@@ -61,8 +60,6 @@ To query for events
       print "Failure\n";
   }
 
-
-
 =head1 METHODS
 
 =head2 new
@@ -80,29 +77,32 @@ Send events to the server.
 
 =cut
 sub send {
-	my ($self) = @_;
+    my ($self) = @_;
 
-	my $ua = LWP::UserAgent->new;
+    my $ua = LWP::UserAgent->new;
 
-	my $req = HTTP::Request->new(POST => $self->url->canonical.'/event');
-	$req->content_type('application/json');
-	$req->content(CGI::escape($self->list->freeze));
+    my $req = HTTP::Request->new(POST => $self->url->canonical.'/event');
+    $req->content_type('application/json');
+    $req->content($self->list->freeze);
 
-	my $res = $ua->request($req);
+    my $res = $ua->request($req);
 
-	if($res->is_success) {
+    if($res->is_success) {
+        my $data = JSON::XS->new->decode($res->content);
+        if(!defined($data) || !(ref($data) eq 'HASH')) {
+            $self->error('Unable to parse JSON response');
+            return 0;
+        }
+        my $count = $data->{count};
+        if($data->{error}) {
+            $self->error($data->error);
+        }
 
-		my $xpresp = XML::XPath->new(xml => $res->content);
-		my $count = $xpresp->find('/response/@count');
-
-		my $err = $xpresp->find('/response/@error');
-		$self->error($err->string_value);
-
-		return $count->string_value;
-	} else {
-		$self->error($res->status_line);
-		return 0;
-	}
+        return $count;
+    } else {
+        $self->error($res->status_line);
+        return 0;
+    }
 }
 
 =head2 query
@@ -127,33 +127,33 @@ Implicitly sets $self->list(undef), to clear previous results.
 =cut
 
 sub query {
-	my ($self, $params) = @_;
+    my ($self, $params) = @_;
 
     $self->list(undef);
 
-	if((ref($params) ne 'HASH') || !scalar(keys(%{ $params }))) {
-		die('Must supply a hash of parameters to query.');
-	}
+    if((ref($params) ne 'HASH') || !scalar(keys(%{ $params }))) {
+        die('Must supply a hash of parameters to query.');
+    }
 
-	my $ua = LWP::UserAgent->new;
+    my $ua = LWP::UserAgent->new;
 
-	my $evtparams = delete($params->{params}) || {};
-	my $query = join('&',
-		map({ "$_=".$params->{$_} } keys(%{ $params })),
-		map({ "parameter.$_=$evtparams->{$_}" } keys %$evtparams)
-	);
+    my $evtparams = delete($params->{params}) || {};
+    my $query = join('&',
+        map({ "$_=".$params->{$_} } keys(%{ $params })),
+        map({ "parameter.$_=$evtparams->{$_}" } keys %$evtparams)
+    );
 
-	my $req = HTTP::Request->new(POST => $self->url->canonical.'/event/list?'.$query);
+    my $req = HTTP::Request->new(GET => $self->url->canonical.'/event?'.$query);
 
-	my $res = $ua->request($req);
+    my $res = $ua->request($req);
 
-	if($res->is_success) {
-		$self->list(Osgood::EventList->thaw($res->content));
-		return 1;
-	} else {
-		$self->error($res->status_line);
-		return 0;
-	}
+    if($res->is_success) {
+        $self->list(Osgood::EventList->thaw($res->content));
+        return 1;
+    } else {
+        $self->error($res->status_line);
+        return 0;
+    }
 }
 
 =head2 timeout
