@@ -178,7 +178,7 @@ about 10 seconds to deserialize 10_000 simple events.
 
 Please keep in mind that the sending of events will also have a cost, as
 insertion into the database takes time.  See the accompanying PERFORMANCE
-section of Osgood::Server
+section of L<Osgood::Server>.
 
 =head1 AUTHOR
 
@@ -194,7 +194,7 @@ perl(1), Osgood::Event, Osgood::EventList
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2008 by Magazines.com, LLC
+Copyright 2008-2009 by Magazines.com, LLC
 
 You can redistribute and/or modify this code under the same terms as Perl
 itself.
