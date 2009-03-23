@@ -4,14 +4,25 @@ use Moose;
 use HTTP::Request;
 use JSON::XS;
 use LWP::UserAgent;
+use Moose::Util::TypeConstraints;
 use URI;
 
+subtype 'Osgood.Client.URI' => as class_type('URI');
+coerce 'Osgood.Client.URI'
+    => from Str
+    => via { URI->new($_, 'http') };
+
 has 'error' => ( is => 'rw', isa => 'Str' );
-has 'url' => ( is => 'rw', isa => 'URI', default => sub { URI->new('http://localhost'); });
+has 'url' => (
+    is => 'rw',
+    isa => 'Osgood.Client.URI',
+    default => sub { URI->new('http://localhost') },
+    coerce => 1
+);
 has 'list' => ( is => 'rw', isa => 'Maybe[Osgood::EventList]' );
 has 'timeout' => ( is => 'rw', isa => 'Int', default => 30 );
 
-our $VERSION = '2.0.0';
+our $VERSION = '2.0.1';
 our $AUTHORITY = 'cpan:GPHAT';
 
 =head1 NAME
