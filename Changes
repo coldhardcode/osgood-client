@@ -1,5 +1,7 @@
 Revision history for Perl extension Osgood::Client.
 
+2.0.2
+    - Fix missing 'use' in Client.pm
 2.0.1
     - Coerce Str into Url for Osgood::Client
 2.0.0

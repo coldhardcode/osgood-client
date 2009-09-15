@@ -5,6 +5,7 @@ use HTTP::Request;
 use JSON::XS;
 use LWP::UserAgent;
 use Moose::Util::TypeConstraints;
+use Osgood::EventList;
 use URI;
 
 subtype 'Osgood.Client.URI' => as class_type('URI');
@@ -22,7 +23,7 @@ has 'url' => (
 has 'list' => ( is => 'rw', isa => 'Maybe[Osgood::EventList]' );
 has 'timeout' => ( is => 'rw', isa => 'Int', default => 30 );
 
-our $VERSION = '2.0.1';
+our $VERSION = '2.0.2';
 our $AUTHORITY = 'cpan:GPHAT';
 
 =head1 NAME
