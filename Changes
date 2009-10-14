@@ -1,5 +1,7 @@
 Revision history for Perl extension Osgood::Client.
 
+2.0.4
+    - Fix unecessary inclusion of XML::XPath (thanks Andreas König)
 2.0.3
     - Fix another missing 'use' in Client.pm
 2.0.2

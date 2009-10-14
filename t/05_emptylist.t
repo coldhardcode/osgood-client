@@ -3,8 +3,6 @@ use Test::More tests => 2;
 use Osgood::Event;
 use Osgood::EventList;
 
-use XML::XPath;
-
 my $list = Osgood::EventList->new;
 
 my $json = $list->freeze;
