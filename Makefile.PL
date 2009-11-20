@@ -13,6 +13,4 @@ requires    'MooseX::Storage';
 requires    'MooseX::AttributeHelpers';
 requires    'URI';
 
-auto_install;
-
 WriteAll;
