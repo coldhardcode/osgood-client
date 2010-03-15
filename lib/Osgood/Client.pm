@@ -22,7 +22,7 @@ has 'url' => (
     coerce => 1
 );
 has 'list' => ( is => 'rw', isa => 'Maybe[Osgood::EventList]' );
-has 'timeout' => ( is => 'rw', isa => 'Int', default => 30 );
+has 'timeout' => ( is => 'rw', isa => 'Int', predicate => 'has_timeout' );
 
 our $VERSION = '2.0.5';
 our $AUTHORITY = 'cpan:GPHAT';
@@ -93,6 +93,9 @@ sub send {
     my ($self) = @_;
 
     my $ua = LWP::UserAgent->new;
+    if($self->has_timeout) {
+        $ua->timeout($self->timeout);
+    }
 
     my $req = HTTP::Request->new(POST => $self->url->canonical.'/event');
     $req->content_type('application/json');
@@ -149,6 +152,9 @@ sub query {
     }
 
     my $ua = LWP::UserAgent->new;
+    if($self->has_timeout) {
+        $ua->timeout($self->timeout);
+    }
 
     my $evtparams = delete($params->{params}) || {};
     my $query = join('&',
