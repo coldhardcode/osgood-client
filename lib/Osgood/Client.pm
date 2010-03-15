@@ -24,7 +24,7 @@ has 'url' => (
 has 'list' => ( is => 'rw', isa => 'Maybe[Osgood::EventList]' );
 has 'timeout' => ( is => 'rw', isa => 'Int', predicate => 'has_timeout' );
 
-our $VERSION = '2.0.6';
+our $VERSION = '2.0.7';
 our $AUTHORITY = 'cpan:GPHAT';
 
 =head1 NAME
