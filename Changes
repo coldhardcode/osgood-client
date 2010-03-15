@@ -1,5 +1,7 @@
 Revision history for Perl extension Osgood::Client.
 
+2.0.7   March 15, 2010
+   - Actually honor timeout if it's set in Client for LWP.
 2.0.6   November 23rd, 2009
     - Fixed missing JSON::Any dep (Thanks Andreas Koenig)
 2.0.5   November 19, 2009
