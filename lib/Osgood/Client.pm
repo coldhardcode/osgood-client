@@ -163,7 +163,7 @@ sub query {
 
     if($res->is_success) {
         $self->list(Osgood::EventList->new(
-            _list => JSON::XS->new->decode($res->content)
+            list => JSON::XS->new->decode($res->content)
         ));
         return 1;
     } else {
