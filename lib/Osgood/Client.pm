@@ -40,12 +40,7 @@ queue.
 
 To send some events:
 
-  my $event = Osgood::Event->new(
-      object => 'Moose',
-      action => 'farted',
-      date_occurred => DateTime->now
-  );
-  my $list = Osgood::EventList->new(events => [ $event ])
+  my $list = Osgood::EventList->new(list => [ { object => 'Moose', action => 'farted', date_occurred => } ])
   my $client = Osgood::Client->new(
       url => 'http://localhost',
       list => $list
@@ -167,7 +162,9 @@ sub query {
     my $res = $ua->request($req);
 
     if($res->is_success) {
-        $self->list(Osgood::EventList->thaw($res->content));
+        $self->list(Osgood::EventList->new(
+            _list => JSON::XS->new->decode($res->content)
+        ));
         return 1;
     } else {
         $self->error($res->status_line);

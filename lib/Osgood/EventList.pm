@@ -1,26 +1,55 @@
 package Osgood::EventList;
 use Moose;
-use MooseX::AttributeHelpers;
 use MooseX::Iterator;
-use MooseX::Storage;
 
-with Storage('format' => 'JSON', 'io' => 'File');
-
-has 'events' => (
-    metaclass => 'Collection::Array',
+has 'list' => (
     is => 'rw',
     isa => 'ArrayRef',
-    default => sub { [] },
-    provides => {
-        push => 'add_to_events',
-        count => 'size'
-    }
+    required => 1,
+    default => sub { [] }
 );
 
-has 'iterator' => (
-    metaclass => 'Iterable',
-    iterate_over => 'events'
+has '_iterator' => (
+    is => 'ro',
+    isa => 'MooseX::Iterator::Array',
+    default => sub { MooseX::Iterator::Array->new( collection => shift->list ) },
+    lazy => 1
 );
+
+sub get_highest_id {
+	my ($self) = @_;
+
+    my $high = undef;
+    foreach my $event (@{ $self->list }) {
+        if(!defined($high) || ($high < $event->{id})) {
+            $high = $event->{id};
+        }
+    }
+
+    return $high;
+}
+
+sub has_next {
+    my ($self) = @_;
+
+    return $self->_iterator->has_next;
+}
+
+sub next {
+    my ($self) = @_;
+
+    return Osgood::Event->new($self->_iterator->next);
+}
+
+sub size {
+    my ($self) = @_;
+
+    return scalar(@{ $self->list });
+}
+
+__PACKAGE__->meta->make_immutable;
+
+1;
 
 =head1 NAME
 
@@ -36,25 +65,19 @@ A list of events.
   $list->add_to_events($event);
   print $list->size."\n";
 
-=head1 METHODS
-
-=head2 Constructor
-
-=head2 new
-
-Creates a new Osgood::EventList object.
-
-=head2 add_to_events
-
-Add the specified event to the list.
+=head1 ATTRIBUTES
 
 =head2 events
 
 Set/Get the ArrayRef of events in this list.
 
-=head2 iterator
+=head1 METHODS
 
-Returns a MooseX::Iterator for iterating over events.
+=head2 add_to_events
+
+Add the specified event to the list.
+
+=head2 next
 
 =head2 size
 
@@ -65,20 +88,6 @@ Returns the number of events in this list.
 Retrieves the largest id from the list of events.  This is useful for keeping
 state with an external process that needs to 'remember' the last event id
 it handled.
-
-=cut
-sub get_highest_id {
-	my ($self) = @_;
-
-	my $high = undef;
-	foreach my $event (@{ $self->events }) {
-		if(!defined($high) || ($high < $event->id)) {
-			$high = $event->id;
-		}
-	}
-
-	return $high;
-}
 
 =head1 AUTHOR
 
@@ -96,7 +105,3 @@ You can redistribute and/or modify this code under the same terms as Perl
 itself.
 
 =cut
-
-__PACKAGE__->meta->make_immutable;
-
-1;
