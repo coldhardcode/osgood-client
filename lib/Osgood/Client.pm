@@ -190,7 +190,9 @@ be called if C<query> or C<send> do not return what you expect.
 
 Originally Osgood used a combination of XML::DOM and XML::XPath for
 serialization.  After some testing it has switched to using JSON, as JSON::XS
-is considerably faster.
+is considerably faster.  Most recently L<Osgood::EventList> was refactored
+to lazy instantiate object and to deal with straight-JSON from the server.
+This resulted in a large speedup on the server side.
 
 Please keep in mind that the sending of events will also have a cost, as
 insertion into the database takes time.  See the accompanying PERFORMANCE

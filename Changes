@@ -1,5 +1,7 @@
 Revision history for Perl extension Osgood::Client.
 
+3.0.0
+   - Major EventList refactor (lazy instantiation and straight JSON encoding)
 2.0.7   March 15, 2010
    - Actually honor timeout if it's set in Client for LWP.
 2.0.6   November 23rd, 2009

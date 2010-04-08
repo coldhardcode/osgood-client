@@ -95,6 +95,12 @@ A list of events.
     my $event = $list->next;
   }
 
+  # iterator is only provided for backcompat and is slower!
+  my $iter = $list->iterator;
+  while($iter->has_next) {
+    my $event = $iter->next;
+  }
+
 =head1 ATTRIBUTES
 
 =head2 events
