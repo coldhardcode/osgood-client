@@ -24,7 +24,7 @@ has 'url' => (
 has 'list' => ( is => 'rw', isa => 'Maybe[Osgood::EventList]' );
 has 'timeout' => ( is => 'rw', isa => 'Int', predicate => 'has_timeout' );
 
-our $VERSION = '2.0.7';
+our $VERSION = '3.0.0';
 our $AUTHORITY = 'cpan:GPHAT';
 
 =head1 NAME
@@ -33,8 +33,8 @@ Osgood::Client - Client for the Osgood Passive, Persistent Event Queue
 
 =head1 DESCRIPTION
 
-Provides a client for sending events to or retrieving events from an Osgood
-queue.
+Provides a client for sending events to or retrieving events from 
+L<Osgood::Server>.
 
 =head1 SYNOPSIS
 
@@ -94,7 +94,8 @@ sub send {
 
     my $req = HTTP::Request->new(POST => $self->url->canonical.'/event');
     $req->content_type('application/json');
-    $req->content($self->list->freeze);
+    $req->content(JSON::XS->new->encode($self->list->list));
+    print STDERR $req->content."\n";
 
     my $res = $ua->request($req);
 
@@ -189,8 +190,7 @@ be called if C<query> or C<send> do not return what you expect.
 
 Originally Osgood used a combination of XML::DOM and XML::XPath for
 serialization.  After some testing it has switched to using JSON, as JSON::XS
-is considerably faster.  In tests on my machine (dual quad-core xeon) it takes
-about 10 seconds to deserialize 10_000 simple events.
+is considerably faster.
 
 Please keep in mind that the sending of events will also have a cost, as
 insertion into the database takes time.  See the accompanying PERFORMANCE

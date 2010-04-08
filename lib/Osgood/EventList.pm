@@ -1,6 +1,9 @@
 package Osgood::EventList;
 use Moose;
 use MooseX::Iterator;
+use MooseX::Storage;
+
+with 'MooseX::Storage::Deferred';
 
 has 'list' => (
     is => 'rw',
@@ -9,12 +12,34 @@ has 'list' => (
     default => sub { [] }
 );
 
-has '_iterator' => (
+has 'iterator' => (
+    traits => [ 'DoNotSerialize' ],
+    is => 'ro',
+    isa => 'MooseX::Iterator::Array',
+    default => sub {
+        my $self = shift;
+        my @items;
+        while($self->has_next) {
+            push(@items, $self->next);
+        }
+        return MooseX::Iterator::Array->new( collection => \@items );
+    },
+    lazy => 1
+);
+
+has '_lazy_iterator' => (
+    traits => [ 'DoNotSerialize' ],
     is => 'ro',
     isa => 'MooseX::Iterator::Array',
     default => sub { MooseX::Iterator::Array->new( collection => shift->list ) },
     lazy => 1
 );
+
+sub add_to_events {
+    my ($self, $event) = @_;
+
+    push(@{ $self->list }, $event->pack);
+}
 
 sub get_highest_id {
 	my ($self) = @_;
@@ -32,13 +57,13 @@ sub get_highest_id {
 sub has_next {
     my ($self) = @_;
 
-    return $self->_iterator->has_next;
+    return $self->_lazy_iterator->has_next;
 }
 
 sub next {
     my ($self) = @_;
 
-    return Osgood::Event->new($self->_iterator->next);
+    return Osgood::Event->new($self->_lazy_iterator->next);
 }
 
 sub size {
@@ -66,9 +91,8 @@ A list of events.
   print $list->size."\n";
 
   # or consume an existing list
-  my $iter = $list->iterator;
-  while($iter->has_next) {
-    my $event = $iter->next;
+  while($list->has_next) {
+    my $event = $list->next;
   }
 
 =head1 ATTRIBUTES

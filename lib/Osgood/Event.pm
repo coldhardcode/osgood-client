@@ -1,19 +1,26 @@
 package Osgood::Event;
 use Moose;
+use Moose::Util::TypeConstraints;
 use MooseX::Storage;
 use MooseX::AttributeHelpers;
 
 use DateTime;
 use DateTime::Format::ISO8601;
 
-with Storage('format' => 'JSON', 'io' => 'File');
+with 'MooseX::Storage::Deferred';
+
+subtype 'Osgood.Client.DateTime' => as class_type('DateTime');
+coerce 'Osgood.Client.DateTime'
+    => from Str
+    => via { DateTime::Format::ISO8601->parse_datetime(shift) };
 
 has 'id' => ( is => 'rw', isa => 'Int'  );
 has 'action' => ( is => 'rw', isa => 'Str', required => 1 );
 has 'date_occurred' => (
     is => 'rw',
-    isa => 'DateTime',
-    default => sub { DateTime->now }
+    isa => 'Osgood.Client.DateTime',
+    default => sub { DateTime->now },
+    coerce => 1
 );
 has 'object' => ( is => 'rw', isa => 'Str', required => 1 );
 has 'params' => (
