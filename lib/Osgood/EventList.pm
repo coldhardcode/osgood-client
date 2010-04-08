@@ -65,6 +65,12 @@ A list of events.
   $list->add_to_events($event);
   print $list->size."\n";
 
+  # or consume an existing list
+  my $iter = $list->iterator;
+  while($iter->has_next) {
+    my $event = $iter->next;
+  }
+
 =head1 ATTRIBUTES
 
 =head2 events
